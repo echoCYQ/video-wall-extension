@@ -39,6 +39,8 @@
 默认情况下，所有分屏会加载你当前正在看的那个网页。你也可以给每个分屏单独换网址。
 <img width="3840" height="2088" alt="image" src="https://github.com/user-attachments/assets/f597c3e3-4f70-4ea2-bb97-f7c3fa97bce8" />
 
+![Uploading image.png…]()
+
 ### 每个分屏能做什么
 
 分屏打开后，每个面板顶部有一排工具栏，从左到右依次是：
