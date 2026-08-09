@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>视频分屏墙</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #0d0f14; color: #e6e8ee; font: 13px/1.5 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+
+  #toolbar {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    background: #12141c;
+    border-bottom: 1px solid #232739;
+    flex-shrink: 0;
+  }
+  .brand { font-weight: 700; font-size: 14px; color: #a8c8ff; margin-right: 8px; white-space: nowrap; }
+  .layout-btn {
+    background: #1c1f2b; border: 1px solid #2a2e3d; border-radius: 6px;
+    padding: 5px 12px; color: #e6e8ee; cursor: pointer; font: inherit;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .layout-btn:hover { background: #262b3b; border-color: #3a4158; }
+  .layout-btn.active { background: #1a73e8; border-color: #1a73e8; color: #fff; }
+  .spacer { flex: 1; }
+  .hint { font-size: 11px; color: #666d82; margin-right: 8px; }
+  #close-btn {
+    background: #2a1d26; border: 1px solid #4a2f3a; border-radius: 6px;
+    padding: 5px 12px; color: #ff9aa8; cursor: pointer; font: inherit;
+  }
+  #close-btn:hover { background: #3a2230; }
+
+  #grid {
+    flex: 1; display: grid; gap: 3px; padding: 3px; overflow: hidden;
+    height: calc(100vh - 42px);
+  }
+
+  .panel {
+    display: flex; flex-direction: column; background: #1a1d28;
+    border: 1px solid #232739; border-radius: 6px; overflow: hidden;
+    min-width: 0; min-height: 0; position: relative;
+  }
+
+  .panel-header {
+    height: 32px; display: flex; align-items: center; gap: 3px; padding: 0 6px;
+    background: #12141c; border-bottom: 1px solid #232739; flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+  .panel-header.collapsed { display: none; }
+  .panel-num { font-size: 11px; font-weight: 700; color: #8ab4ff; width: 16px; text-align: center; flex-shrink: 0; }
+  .url-input {
+    flex: 1; min-width: 0; background: #0d0f14; border: 1px solid #2a2e3d;
+    border-radius: 4px; padding: 3px 8px; color: #e6e8ee;
+    font: 11px/1.4 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; outline: none;
+  }
+  .url-input:focus { border-color: #4f8cff; }
+  .panel-btn {
+    background: #1c1f2b; border: 1px solid #2a2e3d; border-radius: 4px;
+    padding: 3px 7px; color: #e6e8ee; cursor: pointer;
+    font: 10px/1.4 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .panel-btn:hover { background: #262b3b; }
+  .panel-btn.active { background: #1a73e8; border-color: #1a73e8; color: #fff; }
+  .panel-btn.close-btn { border-color: #4a2f3a; background: #2a1d26; color: #ff9aa8; }
+  .panel-btn.close-btn:hover { background: #3a2230; }
+  .panel-btn.collapse-btn { border-color: #333a50; background: #1c1f2b; color: #aeb4c6; }
+
+  .panel-iframe {
+    flex: 1; border: 0; width: 100%; background: #000; min-height: 0;
+  }
+
+  /* 折叠后的透明圆球 */
+  .panel-orb {
+    position: absolute; top: 6px; left: 6px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(15, 17, 26, 0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    cursor: pointer; z-index: 100;
+    display: none;
+    align-items: center; justify-content: center;
+    font: 11px/1 sans-serif; font-weight: 700; color: #a8c8ff;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s;
+  }
+  .panel-orb:hover { background: rgba(26, 115, 232, 0.6); border-color: #4f8cff; color: #fff; }
+  .panel-orb.show { display: flex; }
+
+  .tabs-dropdown {
+    position: absolute; background: #1c1f2b; border: 1px solid #3a4158;
+    border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    max-height: 300px; overflow-y: auto; z-index: 1000;
+    min-width: 240px; max-width: 360px; display: none;
+  }
+  .tabs-dropdown.show { display: block; }
+  .tab-item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 12px;
+    cursor: pointer; font: 11px/1.4 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    color: #c9cedc; border-bottom: 1px solid #232739; transition: background 0.1s;
+  }
+  .tab-item:last-child { border-bottom: 0; }
+  .tab-item:hover { background: #262b3b; }
+  .tab-item img { width: 14px; height: 14px; flex-shrink: 0; border-radius: 2px; }
+  .tab-item .tab-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tab-item .tab-url { color: #666d82; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <span class="brand">视频分屏墙</span>
+  <button class="layout-btn" data-layout="left-right">左右双屏</button>
+  <button class="layout-btn" data-layout="top-bottom">上下双屏</button>
+  <button class="layout-btn" data-layout="grid4">四宫格</button>
+  <div class="spacer"></div>
+  <span class="hint">每屏独立输入网址或从标签页选择</span>
+  <button id="close-btn">关闭</button>
+</div>
+<div id="grid"></div>
+<script src="wall.js"></script>
+</body>
+</html>

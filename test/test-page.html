@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>分屏墙测试页</title>
+<style>
+  body { margin: 0; background: #14161c; color: #e6e8ee; font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+  h1 { text-align: center; font-size: 16px; font-weight: 600; padding: 18px 16px 4px; color: #a8c8ff; }
+  p.hint { text-align: center; font-size: 13px; color: #8a90a3; margin: 0 16px 12px; }
+  video { width: 72vw; max-width: 960px; display: block; margin: 0 auto; background: #000; border-radius: 10px; }
+</style>
+</head>
+<body>
+<h1>分屏墙测试页</h1>
+<p class="hint">本页用 Canvas + MediaRecorder 实时生成一段循环播放的视频，用于验证：分屏后该分屏内的视频是否被自动识别并铺满整个窗口。</p>
+<video id="v" controls muted autoplay loop playsinline></video>
+<script>
+(function () {
+  var canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 360;
+  var ctx = canvas.getContext('2d');
+  var stream = canvas.captureStream(30);
+  var v = document.getElementById('v');
+  var rec = null, chunks = [], t = 0, iv = null;
+
+  function draw(tick) {
+    ctx.fillStyle = 'hsl(' + ((tick * 3) % 360) + ',70%,42%)';
+    ctx.fillRect(0, 0, 640, 360);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 40px sans-serif';
+    ctx.fillText('Test Video #' + tick, 36, 96);
+    ctx.font = '22px sans-serif';
+    ctx.fillText(new Date().toLocaleTimeString(), 36, 148);
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.beginPath();
+    ctx.arc(80 + ((tick % 46) * 12), 262, 24, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function start() {
+    chunks = [];
+    t = 0;
+    try {
+      rec = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 1200000 });
+    } catch (e) {
+      rec = new MediaRecorder(stream, { videoBitsPerSecond: 1200000 });
+    }
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      var blob = new Blob(chunks, { type: 'video/webm' });
+      v.src = URL.createObjectURL(blob);
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+      setTimeout(start, 3000); // 循环再生
+    };
+    rec.start();
+    iv = setInterval(function () {
+      t++;
+      draw(t);
+      if (t >= 90) { clearInterval(iv); rec.stop(); }
+    }, 100);
+  }
+
+  draw(0);
+  start();
+})();
+</script>
+</body>
+</html>

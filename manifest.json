@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "视频分屏墙 Video Wall",
+  "version": "2.0.0",
+  "description": "在一个浏览器窗口的一个标签页内实现双分屏/四宫格，每个分屏可独立输入网址，自动识别并最大化视频",
+  "permissions": ["tabs", "scripting", "declarativeNetRequest"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "视频分屏墙",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "ruleset_1",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  },
+  "web_accessible_resources": [{
+    "resources": ["wall.html"],
+    "matches": ["<all_urls>"]
+  }],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "all_frames": true,
+    "run_at": "document_idle"
+  }],
+  "commands": {
+    "split-left-right": {
+      "suggested_key": { "default": "Ctrl+Shift+1" },
+      "description": "左右双屏"
+    },
+    "split-top-bottom": {
+      "suggested_key": { "default": "Ctrl+Shift+2" },
+      "description": "上下双屏"
+    },
+    "split-grid4": {
+      "suggested_key": { "default": "Ctrl+Shift+3" },
+      "description": "四宫格分屏"
+    }
+  }
+}
