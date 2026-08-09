@@ -11,12 +11,20 @@
 ## 怎么安装
 
 1. 打开 Chrome 浏览器，在地址栏输入 `chrome://extensions` 按回车
-2. 打开页面右上角的**开发者模式**开关
-3. 点左上角的**加载已解压的扩展程序**按钮
-4. 在弹出的对话框里选择 `video-wall-extension` 文件夹
-5. 浏览器工具栏上会出现一个四色宫格图标，安装完成
+   <img width="395" height="60" alt="image" src="https://github.com/user-attachments/assets/9fc009d5-a629-49f0-ac7e-8c658b3c434c" />
+
+3. 打开页面右上角的**开发者模式**开关
+<img width="3819" height="231" alt="image" src="https://github.com/user-attachments/assets/f6b061bd-d623-4391-8d41-e8bd7f80ed7d" />
+
+   
+5. 点左上角的**加载已解压的扩展程序**按钮
+   <img width="860" height="732" alt="image" src="https://github.com/user-attachments/assets/b1a57eac-4587-4c3d-9db8-3ffc50d7084c" />
+
+7. 在弹出的对话框里选择 `video-wall-extension` 文件夹
+8. 浏览器工具栏上会出现一个四色宫格图标，安装完成
 
 建议点工具栏的拼图图标，把这个扩展**固定到工具栏**，方便随时使用。
+<img width="584" height="983" alt="image" src="https://github.com/user-attachments/assets/50033318-3303-4d1f-a0e8-2425e3717a60" />
 
 ## 怎么用
 
@@ -29,6 +37,7 @@
 - 打开后会在当前标签页旁边新建一个标签页，这个标签页里就是分屏界面
 
 默认情况下，所有分屏会加载你当前正在看的那个网页。你也可以给每个分屏单独换网址。
+<img width="3840" height="2088" alt="image" src="https://github.com/user-attachments/assets/f597c3e3-4f70-4ea2-bb97-f7c3fa97bce8" />
 
 ### 每个分屏能做什么
 
